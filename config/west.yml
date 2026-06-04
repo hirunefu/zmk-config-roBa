@@ -31,5 +31,9 @@ manifest:
     - name: zmk-module-runtime-input-processor
       remote: cormoran
       revision: 8103d0618856a099369f86e93b462ee987cf159a
+    # ロータリーエンコーダーのランタイム設定(DYA Studio)
+    - name: zmk-behavior-runtime-sensor-rotate
+      remote: cormoran
+      revision: 3bbd99204671d6a7d539960389a4535f333c3c22
   self:
     path: config
