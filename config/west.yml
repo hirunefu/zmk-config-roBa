@@ -2,8 +2,6 @@ manifest:
   remotes:
     - name: cormoran
       url-base: https://github.com/cormoran
-    - name: hirunefu
-      url-base: https://github.com/hirunefu
     # 既存のリモートはそのまま維持
   projects:
     # ZMK: DYA Studio 用カスタム RPC サブシステム付き cormoran fork
@@ -13,7 +11,7 @@ manifest:
       import: app/west.yml
 
     - name: zmk-pmw3610-driver
-      remote: hirunefu
+      remote: cormoran
       revision: main
 
     # DYA Studio モジュール（すべて cormoran リポジトリ）
