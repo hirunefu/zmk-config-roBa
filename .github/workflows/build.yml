@@ -1,5 +1,12 @@
 on: [push, pull_request, workflow_dispatch]
 
+# ビルドに書き込み権限は要らないので、読み取りだけに絞る
+permissions:
+  contents: read
+
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
+    # ZMK 公式の再利用ワークフローを zmkfirmware/zmk main のコミット SHA で固定する
+    # （2026-09-26 時点の main 先端）。ビルド用コンテナ zmkfirmware/zmk-build-arm:stable は
+    # タグ参照なので、この SHA では固定されない。
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@5b51501fead672c41b5cfb396f3dafe0894bf4e9

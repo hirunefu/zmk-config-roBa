@@ -1,6 +1,29 @@
 #include <dt-bindings/zmk/matrix_transform.h>
 #include <physical_layouts.dtsi>
 
+// NFC ピン（P0.09 / P0.10）を GPIO として使う（右: トラックボール CS と列、左: 列）。
+// Zephyr 4.1 では CONFIG_NFCT_PINS_AS_GPIOS ではなく devicetree で指定する。
+&uicr {
+    nfct-pins-as-gpios;
+};
+
+// xiao_ble ボード（Zephyr 4.1）は xiao_i2c（P0.04/P0.05）と xiao_spi（P1.13〜P1.15）を
+// 既定で有効にしている。roBa ではこれらのピンをトラックボール SPI・エンコーダ・キーの列に
+// 使うので無効にする（旧 seeeduino_xiao_ble ボードでは既定で無効だった）。
+&xiao_i2c {
+    status = "disabled";
+};
+
+&xiao_spi {
+    status = "disabled";
+};
+
+// ボード既定のコンソール用 USB CDC ACM を無効にする（Studio 用の CDC は snippet が別に追加する）。
+// roBa_L.conf / roBa_R.conf の CONFIG_CONSOLE=n と CONFIG_BOARD_SERIAL_BACKEND_CDC_ACM=n と必ず対で使う。
+&board_cdc_acm_uart {
+    status = "disabled";
+};
+
 / {
     chosen {
         zmk,physical-layout = &roba_physical_layout;
@@ -98,7 +121,9 @@
         compatible = "alps,ec11";
         a-gpios = <&xiao_d 5 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
         b-gpios = <&xiao_d 0 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-        steps = <12>;
+        // EC05E1220202 は 12 クリック / 12 パルス。EC11 ドライバは A/B の各エッジを数えるので
+        // 1 回転 = 12 x 4 = 48
+        steps = <48>;
         status = "disabled";
     };
 
@@ -109,7 +134,8 @@
     sensors: sensors {
         compatible = "zmk,keymap-sensors";
         sensors = <&left_encoder &right_encoder>;
-        triggers-per-rotation = <10>;
+        // 360 / 12 = 30 度ごとに発火する。1 クリックでちょうど 1 回
+        triggers-per-rotation = <12>;
     };
 
     trackball_listener: trackball_listener {
