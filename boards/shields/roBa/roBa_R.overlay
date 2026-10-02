@@ -1,7 +1,6 @@
 #include "roBa.dtsi"
 #include <input/processors.dtsi>
 #include <input/processors/runtime-input-processor.dtsi>
-#include <behaviors/battery_history_request.dtsi>
 #include <dt-bindings/zmk/input_transform.h>
 
 &default_transform {
@@ -16,6 +15,15 @@
             , <&xiao_d 7 GPIO_ACTIVE_HIGH>
             , <&gpio0 10 GPIO_ACTIVE_HIGH>
             ;
+};
+
+// オートマウス: トラックボールを動かしている間だけレイヤー 4（MOUSE）を有効にする。
+// ここは初期値で、DYA Studio で変更して保存した値があればそちらが優先される。
+&mouse_runtime_input_processor {
+    temp-layer-enabled;
+    temp-layer = <4>;
+    // 有効化の待ち時間は既定値（直前のキー入力から 100 ms）のまま
+    temp-layer-deactivation-delay-ms = <700>;
 };
 
 / {
@@ -65,7 +73,7 @@
 
     trackball: trackball@0 {
         status = "okay";
-        compatible = "pixart,pmw3610";
+        compatible = "cormoran,pmw3610";
         reg = <0>;
         spi-max-frequency = <2000000>;
         irq-gpios = <&gpio0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
@@ -73,5 +81,7 @@
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
+        // 実行時設定のキー "<param>@tb" に使う ID（保存名の長さ制限があるので短くする）
+        settings-id = "tb";
     };
 };

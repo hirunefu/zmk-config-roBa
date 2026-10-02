@@ -16,12 +16,17 @@
 #     cmake-args: -DCONFIG_ZMK_USB_LOGGING=y
 #     artifact-name: corne_left_with_logging
 #
+# ボードは Zephyr 4.1 の ZMK 用バリアント xiao_ble//zmk（旧 seeeduino_xiao_ble）。
+# artifact-name で出力ファイル名を roBa_R.uf2 / roBa_L.uf2 / settings_reset.uf2 に固定する。
 ---
 include:
- - board: seeeduino_xiao_ble
+ - board: xiao_ble//zmk
    shield: roBa_R
    snippet: studio-rpc-usb-uart
- - board: seeeduino_xiao_ble
+   artifact-name: roBa_R
+ - board: xiao_ble//zmk
    shield: roBa_L
- - board: seeeduino_xiao_ble
+   artifact-name: roBa_L
+ - board: xiao_ble//zmk
    shield: settings_reset
+   artifact-name: settings_reset
