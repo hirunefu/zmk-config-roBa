@@ -26,6 +26,12 @@
     temp-layer-deactivation-delay-ms = <700>;
 };
 
+// スクロールの慣性（弾くと惰性で流れる）を既定で有効にする。DYA Studio で保存した値があればそちらが優先される。
+// 公開版の DYA Studio には慣性の設定画面がないので、調整は開発版（dya-studio-dev）で行う
+&scroll_runtime_input_processor {
+    inertia-enabled;
+};
+
 / {
     trackball_listener {
         status = "okay";
@@ -35,9 +41,12 @@
 
         scroller {
             layers = <5>;
-            input-processors = 
-                <&zip_xy_to_scroll_mapper &scroll_runtime_input_processor>,
-                <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>;
+            // Y 反転は入力プロセッサ（RIP）より前に置く。慣性の出力は RIP から直接ホストへ送られて
+            // 後段のプロセッサを通らないため、後ろで反転すると慣性だけ逆向きに流れる
+            input-processors =
+                <&zip_xy_to_scroll_mapper>,
+                <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>,
+                <&scroll_runtime_input_processor>;
         };
     };
 };

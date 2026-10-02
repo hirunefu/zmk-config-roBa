@@ -47,9 +47,12 @@ manifest:
           - trusted-firmware-m
 
     # 実行時設定の保存基盤（下の各モジュールが依存する）
+    # 起動時に behavior 型の保存値が捨てられる不具合（実行時コンボが再起動で消える）の修正 PR #58 の
+    # ブランチ fix/behavior-settings-load-order。main（c6a7fef）から 2 コミット先。
+    # west は SHA をブランチとタグからしか探さないので、マージされたら main の SHA に上げる
     - name: zmk-feature-custom-settings
       remote: cormoran
-      revision: c6a7fef3a3be3d3ace5de9a4b0628c6418cd1f3f
+      revision: 11fc4dda8ac11b1ff33101a6e59377021fec381b
 
     # トラックボール（PMW3610）ドライバ。DYA Studio から CPI などを変更できる
     - name: zmk-driver-pmw3610-with-custom-studio-rpc
@@ -76,6 +79,49 @@ manifest:
     - name: zmk-module-settings-rpc
       remote: cormoran
       revision: 78f86df9e6c5edaf57bef3ccbd7f360cfdf49291
+
+    # 実行時マクロ（DYA Studio の Macro&Combo タブで作成。キーには &rmacro <スロット> を割り当てる）
+    - name: zmk-feature-runtime-macro
+      remote: cormoran
+      revision: 38530962eb7061b60efcb98e84585cfb1f0cb6de
+
+    # 実行時コンボ（keymap の静的コンボとは別物）
+    - name: zmk-feature-runtime-combo
+      remote: cormoran
+      revision: d9490e7b5d41c516221d131241009e81740efcee
+
+    # キーマップ読込の高速化（読み取り専用）。DYA Studio の「既定のキーマップに戻す」もこれが前提
+    - name: zmk-feature-fast-keymap
+      remote: cormoran
+      revision: 8dac76de0ba38588ba39ca498910e24f8332bc6b
+
+    # ホスト OS の推定（USB 列挙と BLE の GATT 読み取りの癖から判定する）
+    - name: zmk-feature-os-detection
+      remote: cormoran
+      revision: 3052679f645b8fc1997275c2eaa6b86bdd55ca01
+
+    # 接続先・OS ごとの既定レイヤー（DYA Studio の Connection タブで設定）。
+    # main と共通の祖先がない別系統のブランチ codex/custom-rpc-rewrite の先端（b25cb5b）とツリーが同一の
+    # PR #6 の head を使う。こちらは 3 本のブランチから辿れるので消えにくい。
+    # zephyr/module.yml で os-detection と custom-settings に依存するので、os-detection だけを外すとビルドできない
+    - name: zmk-feature-default-layer
+      remote: cormoran
+      revision: bb3093452ea1978b1fe1f698923a91d620ffa098
+
+    # 診断: ビルドとハードウェアの情報（右手だけで有効）
+    - name: zmk-feature-device-info
+      remote: cormoran
+      revision: 8cedd2dd9f04e19ea5a17b94914dd47a09d8db11
+
+    # 診断: フォールトの記録と自動再起動（左右とも有効）
+    - name: zmk-feature-watchdog
+      remote: cormoran
+      revision: 84ad14c6c3645dc40b23f45d08ab45418655f912
+
+    # 診断: キーマトリクスの配線とチャタリングの確認（左右とも有効）
+    - name: zmk-feature-kscan-diagnostics
+      remote: cormoran
+      revision: 1432f7fe0cfe903cd7d3c9931ae6bd6f2e1f328e
 
     # 電池残量の履歴（機能は無効）。外すときは roBa_L.conf / roBa_R.conf の
     # CONFIG_ZMK_BATTERY_HISTORY* の行も同時に消す（未定義シンボルへの代入はビルドエラーになる）
