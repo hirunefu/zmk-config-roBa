@@ -1,0 +1,17 @@
+file_format: "1"
+# id はスキーマの正規表現（小文字・数字・_ のみ）に合わせて小文字にする。
+# ビルドに使うシールド名は siblings の実名（大文字を含む）のまま
+id: roba
+name: roBa
+type: shield
+url: https://github.com/kumamuk-git/roBa
+description: "Seeed Studio XIAO nRF52840 (xiao_ble) 専用。nRF52840 の GPIO・NFC ピン・SPIM を直接使う"
+requires: [seeed_xiao]
+features:
+  - keys
+  - encoder
+  - pointer
+  - studio
+siblings:
+  - roBa_L
+  - roBa_R

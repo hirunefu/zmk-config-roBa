@@ -42,11 +42,12 @@
     };
 
     macros {
-        to_layer_0: to_layer_0 {
+        // 非推奨の label の代わりにノード名を大文字にして、behavior の内部名を "TO_LAYER_0" のまま保つ。
+        // 内部名が変わると、DYA Studio などで本体に保存した割り当てが解決できなくなる
+        to_layer_0: TO_LAYER_0 {
             compatible = "zmk,behavior-macro-one-param";
             #binding-cells = <1>;
             bindings = <&to_keep 0 &macro_param_1to1 &kp MACRO_PLACEHOLDER>;
-            label = "TO_LAYER_0";
         };
     };
 
@@ -59,9 +60,9 @@
             display-name = "To Layer (keep locked)";
         };
 
-        lt_to_layer_0: lt_to_layer_0 {
+        // TO_LAYER_0 と同じ理由で、label の代わりにノード名で内部名 "LAYER_TAP_TO_0" を保つ
+        lt_to_layer_0: LAYER_TAP_TO_0 {
             compatible = "zmk,behavior-hold-tap";
-            label = "LAYER_TAP_TO_0";
             bindings = <&mo>, <&to_layer_0>;
 
             #binding-cells = <2>;
@@ -169,7 +170,7 @@
         };
 
         // OS レイヤー: 接続先の OS に応じて DYA Studio の Connection タブから自動で重ねる差分レイヤー
-        // （roBa_R.conf の CONFIG_ZMK_DEFAULT_LAYER_MIN/MAX_INDEX=7 で、このレイヤーだけを管理させる）。
+        // （config/roBa_R.conf の CONFIG_ZMK_DEFAULT_LAYER_MIN/MAX_INDEX=7 で、このレイヤーだけを管理させる）。
         // 初期値はすべて透過で、動作は変わらない。Mac 用の差分キーは DYA Studio で置く。
         // 最上位のレイヤーなので、ここに置いたキーはレイヤー 1〜6 の同じ位置より優先される
         os_layer {
