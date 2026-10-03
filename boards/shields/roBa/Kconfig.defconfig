@@ -1,7 +1,9 @@
 if SHIELD_ROBA_R
 
+# ホストに見える名前（BLE の機器名と USB の製品名。16 文字未満）。
+# 以前は roBa_R.conf で "roBa" に上書きしていた。接続先での表示名を変えないよう "roBa" のままにする
 config ZMK_KEYBOARD_NAME
-    default "roBa_R"
+    default "roBa"
 
 config ZMK_SPLIT
     default y
@@ -13,6 +15,9 @@ endif
 
 if SHIELD_ROBA_L
 
+# ペリフェラルはホストに接続しないので、名前は動作に要らない（右手は名前ではなくサービスの UUID で左手を探し、
+# 左手の広告に名前は入らない）。USB 接続時の製品名と、接続後に読める機器名・DIS の型番で左手を見分けられるよう、
+# 従来の名前を残す
 config ZMK_KEYBOARD_NAME
     default "roBa_L"
 

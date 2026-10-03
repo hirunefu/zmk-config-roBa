@@ -1,24 +1,62 @@
 name: "Draw Keymap"
 
+# キーマップ図（keymap-drawer/roBa.svg と roBa.yaml）を描き直して、同じブランチにコミットする。
+# 図に関係するファイルが main に push されたときと、main での手動実行（workflow_dispatch）のときに動く。
+# - main だけに限る。作業ブランチで図のコミットが増えて、生成物どうしがマージで衝突するのを避ける。
+#   branches だけを指定しているので、タグの push でも動かない
+# - pull_request では動かさない。PR ブランチに生成物のコミットが入って衝突のもとになり、
+#   フォークからの PR には書き込み権限もない
+# - 自分のコミットで再実行はされない。GITHUB_TOKEN で push したコミットは新しい実行を起こさず、
+#   変えるのも keymap-drawer/ だけで下の paths に当たらない。
+#   同じ理由で図のコミットでは build.yml も動かないが、ファームウェアは変わらないので問題ない
+# - keymap-editor の保存（push）ごとに、図のコミットが 1 つ続く。図が変わらなければコミットしない
 on:
   workflow_dispatch:
-  # push時に自動で実行する場合は、以下のコメントアウトを外す
-  # push:
-  #   paths:
-  #     - "config/roBa.keymap"
-  #     - "keymap_drawer.config.yaml"
-  #     - "config/roBa.dtsi"
+  push:
+    branches:
+      - main
+    paths:
+      - "config/roBa.keymap"
+      - "config/roBa.json"
+      - "keymap_drawer.config.yaml"
+      - ".github/workflows/draw.yml"
+
+# 続けて push されたときは古い実行を取り消し、最新のキーマップだけを描く
+concurrency:
+  group: draw-${{ github.ref }}
+  cancel-in-progress: true
+
+# 既定は読み取りだけにして、コミットする draw ジョブにだけ書き込みを許す
+permissions:
+  contents: read
 
 jobs:
   draw:
-    uses: caksoylar/keymap-drawer/.github/workflows/draw-zmk.yml@f9cf9d3677368a7fb1dc505c51b8156fafa66fe2
+    # 手動実行を main 以外のブランチから起動しても、そのブランチに図がコミットされないようにする
+    if: github.ref == 'refs/heads/main'
+    # keymap-drawer の再利用ワークフローをコミット SHA で固定する。
+    # 3a4ca7e は v0.23.0（2026-03-17）の後の main で、draw-zmk.yml を最後に変えたコミット
+    # （中で使う actions を Node 24 対応版に上げた #203）。
+    # 中で使う actions（checkout@v6、git-auto-commit-action@v7 など）はタグ参照なので、この SHA では固定されない
+    uses: caksoylar/keymap-drawer/.github/workflows/draw-zmk.yml@3a4ca7e060a54ba700d3e7b6a43cb0b9cec347d2
     permissions:
       contents: write
     with:
-      commit_message: "[Draw] ${{ github.event.head_commit.message || 'Update keymap drawing' }}"
-      amend_commit: false
-      keymap_patterns: "config/*.keymap"
+      # keymap-drawer 本体は PyPI から入る。版を指定しないと実行のたびに最新版が入り、
+      # キーマップを変えていなくても図に差分が出ることがあるので固定する
+      # （依存パッケージの版は固定されないが、図の出力にはまず影響しない）
+      install_version: "0.23.0"
+      keymap_patterns: "config/roBa.keymap"
+      # config/roBa.json（keymap-editor と共用の物理レイアウト）を keymap draw -j に渡す
       json_path: "config"
-      config_path: "keymap_drawer.config.yaml" # config file, ignored if not exists
+      config_path: "keymap_drawer.config.yaml"
+      # west.yml のモジュール取得を省く。keymap の #include は zmk_additional_includes を
+      # 設定しない限り使われず、取得しても図は変わらない。固定先の SHA が消えると取得に失敗して図も描けなくなる
+      west_config_path: ""
       output_folder: "keymap-drawer"
-      destination: "both"
+      # 描画に失敗したら何もコミットしない（roBa.yaml だけ更新されて roBa.svg と食い違うのを防ぐ）
+      fail_on_error: true
+      destination: "commit"
+      # 直前のコミットを書き換える amend は使わない（force push になり、手元の main と食い違う）
+      amend_commit: false
+      commit_message: "[Draw] キーマップ図を更新する（${{ github.sha }}）"

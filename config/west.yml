@@ -123,12 +123,6 @@ manifest:
       remote: cormoran
       revision: 1432f7fe0cfe903cd7d3c9931ae6bd6f2e1f328e
 
-    # 電池残量の履歴（機能は無効）。外すときは roBa_L.conf / roBa_R.conf の
-    # CONFIG_ZMK_BATTERY_HISTORY* の行も同時に消す（未定義シンボルへの代入はビルドエラーになる）
-    - name: zmk-module-battery-history
-      remote: cormoran
-      revision: 307755dd2ad4d320e14de162e8e5ef018f29d929
-
   # nanopb（Studio RPC に必須）は optional グループにある。取り込み順に関係なく有効にするため消さない
   group-filter: [+optional]
   self:

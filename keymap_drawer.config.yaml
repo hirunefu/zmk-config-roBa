@@ -1,0 +1,18 @@
+# keymap-drawer の設定。.github/workflows/draw.yml が keymap parse と keymap draw の両方に -c で渡す。
+# 書いた項目だけが既定値を上書きする。ただし辞書型の項目（zmk_keycode_map など）は既定値と
+# 混ざらず丸ごと置き換わり、記号の表示が崩れるので、ここでは使わない。
+# 項目の説明: https://github.com/caksoylar/keymap-drawer/blob/v0.23.0/CONFIGURATION.md
+draw_config:
+  # GitHub をダークテーマで見たときに、レイヤー名などの文字が背景に沈まないようにする
+  dark_mode: auto
+parse_config:
+  # keymap-drawer が中身を知らない behavior の表示名。binding の全文と一致するか、
+  # 1 語目（behavior 名）だけのキーと一致したときに使われる
+  raw_binding_map:
+    # A+S のコンボ。無変換を送ってからレイヤー 0 に戻る（config/roBa.keymap の to_layer_0 マクロ）
+    "&to_layer_0 INT_MUHENKAN": {t: 無変換, h: "→ 0"}
+    "&mkp MB1": LCLK
+    "&mkp MB2": RCLK
+    "&mkp MB3": MCLK
+    "&studio_unlock": "Studio\nunlock"
+    "&bootloader": Boot
