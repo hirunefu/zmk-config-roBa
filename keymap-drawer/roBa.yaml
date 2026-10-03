@@ -1,6 +1,6 @@
 layout: {zmk_keyboard: roBa}
 layers:
-  default:
+  BASE:
   - Q
   - W
   - E
@@ -38,7 +38,7 @@ layers:
   - LCTRL
   - LEFT WIN
   - LEFT ALT
-  - {t: LANG2, h: '6'}
+  - {t: LANG2, h: SYSTEM}
   - {t: SPACE, h: NUM}
   - {t: LANG1, h: ARROW}
   - BACKSPACE
@@ -264,7 +264,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  '6':
+  SYSTEM:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
