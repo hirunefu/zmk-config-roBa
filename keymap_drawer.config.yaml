@@ -9,7 +9,7 @@ parse_config:
   # keymap-drawer が中身を知らない behavior の表示名。binding の全文と一致するか、
   # 1 語目（behavior 名）だけのキーと一致したときに使われる
   raw_binding_map:
-    # A+S のコンボ。無変換を送ってからレイヤー 0 に戻る（config/roBa.keymap の to_layer_0 マクロ）
+    # A+S のコンボ。レイヤー 0 に戻ってから無変換を送る（config/roBa.keymap の to_layer_0 マクロ）
     "&to_layer_0 INT_MUHENKAN": {t: 無変換, h: "→ 0"}
     "&mkp MB1": LCLK
     "&mkp MB2": RCLK

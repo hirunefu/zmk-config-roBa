@@ -60,15 +60,6 @@
             display-name = "To Layer (keep locked)";
         };
 
-        // TO_LAYER_0 と同じ理由で、label の代わりにノード名で内部名 "LAYER_TAP_TO_0" を保つ
-        lt_to_layer_0: LAYER_TAP_TO_0 {
-            compatible = "zmk,behavior-hold-tap";
-            bindings = <&mo>, <&to_layer_0>;
-
-            #binding-cells = <2>;
-            tapping-term-ms = <200>;
-        };
-
         // ロータリーエンコーダー: DYA Studio でランタイムに割り当て変更可能。
         // cw-binding/ccw-binding はデフォルト値で、Studio 設定があれば上書きされる。
 
@@ -93,6 +84,7 @@
         compatible = "zmk,keymap";
 
         default_layer {
+            display-name = "BASE";
             bindings = <
 &kp Q             &kp W         &kp E         &kp R        &kp T                                        &kp Y        &kp U  &kp I      &kp O    &kp P
 &kp A             &kp S         &kp D         &kp F        &kp G        &kp ESC          &kp EQUAL      &kp H        &kp J  &kp K      &kp L    &kp MINUS
@@ -104,6 +96,7 @@
         };
 
         FUNCTION {
+            display-name = "FUNCTION";
             bindings = <
 &trans     &kp AMPERSAND    &kp ASTERISK  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS                      &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &trans         &trans             &trans
 &kp TILDE  &kp DOLLAR       &kp PERCENT   &kp CARET             &trans                 &trans      &trans  &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp SEMICOLON  &kp SINGLE_QUOTE   &kp BACKSLASH
@@ -115,6 +108,7 @@
         };
 
         NUM {
+            display-name = "NUM";
             bindings = <
 &kp MINUS                   &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp PLUS                                           &trans      &kp F7  &kp F8  &kp F9  &kp F10
 &kp SLASH                   &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &kp ASTERISK  &kp LC(LA(KP_NUMBER_0))      &trans  &trans      &kp F4  &kp F5  &kp F6  &kp F11
@@ -126,6 +120,7 @@
         };
 
         ARROW {
+            display-name = "ARROW";
             bindings = <
 &kp LG(LEFT_ARROW)  &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LG(RIGHT_ARROW)                      &kp LG(LEFT_ARROW)  &kp LS(LC(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LG(RIGHT_ARROW)
 &kp HOME            &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END              &trans      &trans  &kp HOME            &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END
@@ -137,6 +132,7 @@
         };
 
         MOUSE {
+            display-name = "MOUSE";
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans    &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &trans
@@ -147,7 +143,10 @@
             sensor-bindings = <&rsr_trans>;
         };
 
+        // 使っていない（入るキーがない）。消すとレイヤー 6・7 の番号が 1 つずつ繰り上がり、
+        // Studio に保存した割り当てと OS レイヤー（7）の設定がずれるので残している
         SCROLL {
+            display-name = "SCROLL";
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
@@ -159,6 +158,7 @@
         };
 
         layer_6 {
+            display-name = "SYSTEM";
             bindings = <
 &trans  &trans        &trans        &trans        &trans                           &bt BT_SEL 0    &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
 &trans  &kp NUMBER_4  &trans        &trans        &trans  &trans      &trans       &studio_unlock  &trans        &trans        &trans        &trans
