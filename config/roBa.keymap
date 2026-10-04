@@ -66,12 +66,17 @@
         // Tap Time の初期値にもなる（保存済みの割り当ては、保存したときの値のまま）。
         // マウススクロール（&msc）は押してから 16 ms 後に最初の量を送るので、16 より短いとスクロールしない
 
-        rsr_pgupdn: rsr_pgupdn {
+        // 既定レイヤー用: マウスホイールと同じ縦スクロール。向きは Windows のホイールに合わせ、
+        // 以前 PageUp を割り当てていた回転方向が上スクロールになる。
+        // &msc は押している間、16 ms ごとに「値 × 16 / 1000」段を送る。tap-ms が 16 なので 1 クリックで
+        // 1 回だけ送られ、値 100 なら 1.6 → 1 段になる（ZMK 既定の SCRL_UP は値が 10 で、0.16 段にしか
+        // ならずスクロールしない）
+        rsr_scroll: rsr_scroll {
             compatible = "zmk,behavior-runtime-sensor-rotate";
             #sensor-binding-cells = <0>;
             tap-ms = <16>;
-            cw-binding = <&kp PAGE_UP>;
-            ccw-binding = <&kp PAGE_DOWN>;
+            cw-binding = <&msc MOVE_Y(100)>;
+            ccw-binding = <&msc MOVE_Y(-100)>;
         };
 
         rsr_tab: rsr_tab {
@@ -97,7 +102,7 @@
 &kp LCTRL         &kp LEFT_WIN  &kp LEFT_ALT  &lt 6 LANG2  &lt 2 SPACE  &lt 3 LANG1      &kp BACKSPACE  &lt 1 ENTER                             &kp DEL
             >;
 
-            sensor-bindings = <&rsr_pgupdn>;
+            sensor-bindings = <&rsr_scroll>;
         };
 
         FUNCTION {
