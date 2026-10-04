@@ -14,5 +14,7 @@ parse_config:
     "&mkp MB1": LCLK
     "&mkp MB2": RCLK
     "&mkp MB3": MCLK
+    "&mkp MB4": Back
+    "&mkp MB5": Fwd
     "&studio_unlock": "Studio\nunlock"
     "&bootloader": Boot
