@@ -141,13 +141,18 @@
             sensor-bindings = <&rsr_tab>;
         };
 
+        // オートマウスで入るレイヤー。ここで &trans のキーを押すと、オートマウスはその場で解除される
+        // （Ctrl・Win・Alt は例外で、解除されない）。&trans 以外を置いたキーでは解除されない。
+        // J・K・L = 左・中・右クリック、M = 戻る、. = 進む。
+        // Z と / は既定レイヤーと同じ割り当てを置き直している。長押しの Shift でオートマウスが
+        // 解除されないようにして、Shift を押しながらクリックできるようにするため
         MOUSE {
             display-name = "4 MOUSE";
             bindings = <
-&trans  &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans    &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans    &trans    &trans    &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                                &trans
+&trans            &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans    &trans
+&trans            &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &trans
+&mt LEFT_SHIFT Z  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB4  &trans    &mkp MB5  &mt LEFT_SHIFT SLASH
+&trans            &trans  &trans  &trans  &trans  &trans      &trans  &trans                                &trans
             >;
 
             sensor-bindings = <&rsr_trans>;

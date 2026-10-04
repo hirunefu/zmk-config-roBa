@@ -17,13 +17,19 @@
             ;
 };
 
-// オートマウス: トラックボールを動かしている間だけレイヤー 4（MOUSE）を有効にする。
+// オートマウス: トラックボールを動かすとレイヤー 4（MOUSE）に入り、ボールを止めて 10 秒たつか、
+// MOUSE レイヤーで &trans のキーを押すまで続く。
 // ここは初期値で、DYA Studio で変更して保存した値があればそちらが優先される。
 &mouse_runtime_input_processor {
     temp-layer-enabled;
     temp-layer = <4>;
-    // 有効化の待ち時間は既定値（直前のキー入力から 100 ms）のまま
-    temp-layer-deactivation-delay-ms = <700>;
+    // キーコードを送るキーを押してから 300 ms は、ボールが動いてもレイヤーを有効にしない（入力中に手が触れて
+    // 入るのを減らす）。&lt の長押しとマウスボタンは数えない
+    temp-layer-activation-delay-ms = <300>;
+    // カーソルを最後に動かしてから 10 秒で解除する（クリックや LANG1 のスクロールでは延びない）。
+    // MOUSE レイヤーで割り当てのないキーを押せば、その場で解除される。
+    // DYA Studio のスライダーは 2000 ms までなので、この長さはここでしか指定できない
+    temp-layer-deactivation-delay-ms = <10000>;
 };
 
 // スクロールの慣性（弾くと惰性で流れる）を既定で有効にする。DYA Studio で保存した値があればそちらが優先される。
@@ -39,14 +45,24 @@
         device = <&trackball>;
         input-processors = <&mouse_runtime_input_processor>;
 
+        // 子ノードは上から順に調べられ、最初に当てはまったものだけが使われる
         scroller {
-            layers = <5>;
+            // LANG1 を長押ししている間（ARROW レイヤー 3）、ボールの動きをスクロールにする。
+            // SCROLL レイヤー（5）は入るキーがないが、番号を保つために残している
+            layers = <3 5>;
             // Y 反転は入力プロセッサ（RIP）より前に置く。慣性の出力は RIP から直接ホストへ送られて
             // 後段のプロセッサを通らないため、後ろで反転すると慣性だけ逆向きに流れる
             input-processors =
                 <&zip_xy_to_scroll_mapper>,
                 <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>,
                 <&scroll_runtime_input_processor>;
+        };
+
+        // 低速モード: SPACE を長押ししている間（NUM レイヤー 2）、カーソルを 1/3 の速さにする。
+        // 端数は持ち越されるので、ゆっくり動かしても動きは抜けない
+        snipe {
+            layers = <2>;
+            input-processors = <&zip_xy_scaler 1 3>, <&mouse_runtime_input_processor>;
         };
     };
 };
