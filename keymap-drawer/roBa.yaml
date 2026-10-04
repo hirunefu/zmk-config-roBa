@@ -1,6 +1,6 @@
 layout: {zmk_keyboard: roBa}
 layers:
-  BASE:
+  0 BASE:
   - Q
   - W
   - E
@@ -38,13 +38,13 @@ layers:
   - LCTRL
   - LEFT WIN
   - LEFT ALT
-  - {t: LANG2, h: SYSTEM}
-  - {t: SPACE, h: NUM}
-  - {t: LANG1, h: ARROW}
+  - {t: LANG2, h: 6 SYSTEM}
+  - {t: SPACE, h: 2 NUM}
+  - {t: LANG1, h: 3 ARROW}
   - BACKSPACE
-  - {t: ENTER, h: FUNCTION}
+  - {t: ENTER, h: 1 FUNCTION}
   - DEL
-  FUNCTION:
+  1 FUNCTION:
   - {t: ▽, type: trans}
   - '&'
   - '*'
@@ -88,7 +88,7 @@ layers:
   - {t: ▽, type: trans}
   - {type: held}
   - {t: ▽, type: trans}
-  NUM:
+  2 NUM:
   - '-'
   - KP 7
   - KP 8
@@ -132,7 +132,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - F13
-  ARROW:
+  3 ARROW:
   - Gui+LEFT ARROW
   - Ctl+Sft+TAB
   - UP ARROW
@@ -176,7 +176,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  MOUSE:
+  4 MOUSE:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -220,7 +220,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  SCROLL:
+  5 SCROLL:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -264,7 +264,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  SYSTEM:
+  6 SYSTEM:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -310,7 +310,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - BT CLR ALL
-  OS:
+  7 OS:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
