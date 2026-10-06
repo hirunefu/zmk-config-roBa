@@ -1,4 +1,27 @@
-on: [push, pull_request, workflow_dispatch]
+# 起動条件:
+# - push は main だけ。PR のブランチへの push では動かさない（同じコミットが pull_request でも
+#   ビルドされ、2 回走っていたため）
+# - ビルドに関係しないファイル（文書、キーマップ図とその設定、図のワークフロー）だけの変更では
+#   動かさない。これらだけを変えた PR にはビルドのチェックが付かない
+# - workflow_dispatch は手動実行用
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'keymap-drawer/**'
+      - 'keymap_drawer.config.yaml'
+      - '.github/workflows/draw.yml'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'keymap-drawer/**'
+      - 'keymap_drawer.config.yaml'
+      - '.github/workflows/draw.yml'
+  workflow_dispatch:
 
 # ビルドに書き込み権限は要らないので、読み取りだけに絞る
 permissions:
