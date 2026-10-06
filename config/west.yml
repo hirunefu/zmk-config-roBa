@@ -77,7 +77,8 @@ manifest:
       remote: cormoran
       revision: 57738cc4fc6ba80e82a7ac57741a0339cb186cd4
 
-    # アイドル時間などの設定
+    # アイドル時間とディープスリープ時間の実行時設定（DYA Studio の Settings → 電源管理）。
+    # 右手で変えると左手にも中継され、左右それぞれのフラッシュに保存される
     - name: zmk-module-settings-rpc
       remote: cormoran
       revision: 78f86df9e6c5edaf57bef3ccbd7f360cfdf49291
