@@ -7,6 +7,8 @@ manifest:
       url-base: https://github.com/zmkfirmware
     - name: cormoran
       url-base: https://github.com/cormoran
+    - name: amgskobo
+      url-base: https://github.com/amgskobo
   projects:
     # zmk は必ず zephyr より前に置く。app/west.yml の lvgl / hal_stm32 / zmk-studio-messages を
     # Zephyr 側の定義より優先させるため（west は先に定義されたプロジェクトを採用する）。
@@ -122,6 +124,13 @@ manifest:
     - name: zmk-feature-kscan-diagnostics
       remote: cormoran
       revision: 1432f7fe0cfe903cd7d3c9931ae6bd6f2e1f328e
+
+    # トラックボールのポインタ加速（速さに応じた倍率。Windows の「ポインターの精度を高める」をファームウェア側で行う）。
+    # main の先端（2026-09-23）。cormoran main+dya と custom-settings に対して CI が通っている。
+    # 曲線の 4 値は custom-settings に登録され、DYA Studio の Settings → Advanced settings（amgskobo__accel）で変えられる
+    - name: zmk-input-vector-acceleration
+      remote: amgskobo
+      revision: 3f1bb330e576b31e4cac89524865ee5c00908cbc
 
   # nanopb（Studio RPC に必須）は optional グループにある。取り込み順に関係なく有効にするため消さない
   group-filter: [+optional]

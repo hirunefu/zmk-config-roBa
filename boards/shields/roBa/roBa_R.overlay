@@ -1,6 +1,7 @@
 #include "roBa.dtsi"
 #include <input/processors.dtsi>
 #include <input/processors/runtime-input-processor.dtsi>
+#include <zmk-input-vector-acceleration/input_processor_vector_accel.dtsi>
 #include <dt-bindings/zmk/input_transform.h>
 
 &default_transform {
@@ -32,6 +33,18 @@
     temp-layer-deactivation-delay-ms = <10000>;
 };
 
+// ポインタ加速の初期値（DYA Studio で保存した値があればそちらが優先される）。
+// 速さは 1 秒あたりのカウント数（CPI 800 なので 1000 カウント/秒 ≒ 指の速さ 32 mm/秒）。
+// 1000 カウント/秒までは倍率 1.0 で、ゆっくり動かしたときは IST PLUS と同じ。それより速いと二次曲線で
+// 大きくなり、5000 カウント/秒以上で最大の 1.8 倍（2000 で 1.05、3000 で 1.2、4000 で 1.45）。
+// 無効にするときは max-factor を 1000 にする（全速度で 1.0 になる）
+&vector_accel {
+    min-factor = <1000>;
+    max-factor = <1800>;
+    unity-speed = <1000>;
+    max-speed = <5000>;
+};
+
 // スクロールの慣性（弾くと惰性で流れる）を既定で有効にする。DYA Studio で保存した値があればそちらが優先される。
 // 公開版の DYA Studio には慣性の設定画面がないので、調整は開発版（dya-studio-dev）で行う
 &scroll_runtime_input_processor {
@@ -43,7 +56,9 @@
         status = "okay";
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        input-processors = <&mouse_runtime_input_processor>;
+        // 加速は実行時プロセッサ（RIP）より前に置く。RIP の倍率に関係なくセンサーの生のカウントで速さを
+        // 判定するため。倍率が 1.0 未満にならないので、オートマウスの判定（動きがあるか）は変わらない
+        input-processors = <&vector_accel>, <&mouse_runtime_input_processor>;
 
         // 子ノードは上から順に調べられ、最初に当てはまったものだけが使われる
         scroller {
