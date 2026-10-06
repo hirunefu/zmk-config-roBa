@@ -108,6 +108,16 @@
 
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-matrix";
+        // ディープスリープ（config/roBa_R.conf・roBa_L.conf の CONFIG_ZMK_SLEEP）からキーで起きるために必要。
+        // 無いと ZMK は電源を切る前にキースキャンも止めてピンを切り離すので、リセットボタンを押すまで起きない
+        // （USB をつないでも起きる見込み。未確認）。
+        // これが付いた kscan は止めずに残され、列（col-gpios）を High にしたまま行（row-gpios）が High になるのを
+        // nRF52840 の SENSE で待つ。どのキーを押しても行が High になって起きる。ただし、キーが押さえられたまま
+        // 眠ると（物が載っているなど）この待ち受けが切れたままなので、キーでは起きない（リセットボタンか、USB をつなぐ）。
+        // トラックボール（PMW3610 のドライバが眠る前に割り込みを切る）と
+        // エンコーダ（EC11 は SENSE を使わないエッジ割り込みで、眠る前の処理も無い）では起きない。
+        // physical_layout の kscan がこのノードなので、ここ（左右共通）に置く。ディープスリープを使わなくても害は無い
+        wakeup-source;
         diode-direction = "col2row";
             row-gpios
                 = <&xiao_d 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
