@@ -1,6 +1,6 @@
 name: roBa
 build:
-  # リポジトリ直下の CMakeLists.txt（この個体だけの C ソースを ZMK 本体の app ターゲットに足す）
+  # リポジトリ直下の CMakeLists.txt（この個体のコード、src/ の C ソースを ZMK 本体の app ターゲットに足す）
   cmake: .
   # リポジトリ直下の Kconfig（ROBA_ で始まる設定項目）。ファイルが無いとビルドの configure で止まる
   kconfig: Kconfig
