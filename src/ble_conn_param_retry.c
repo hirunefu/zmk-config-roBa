@@ -1,17 +1,32 @@
 /*
  * ホストとの BLE 接続間隔が希望（CONFIG_BT_PERIPHERAL_PREF_MIN_INT〜MAX_INT）から外れたら、
- * 接続パラメータの更新を自分から要求し直す。右手（ホストから見たペリフェラル）専用。
+ * 接続パラメータの更新を自分から要求し直す。右手（ホストに対してペリフェラル役）専用。
  * 有効化は CONFIG_ROBA_BLE_CONN_PARAM_RETRY（Kconfig と config/roBa_R.conf を参照）。
  * 入れた理由（症状と実測日）は config/roBa_R.conf に書いてある。ここには仕組みと回数・待ち時間を書く。
  *
- * Zephyr 4.1 のホストの仕組み（zmkfirmware/zephyr@10ba6d0 の subsys/bluetooth/host/ を読んだ結果）:
+ * Zephyr 4.1 の BLE スタックの仕組み（zmkfirmware/zephyr@10ba6d0 の subsys/bluetooth/host/ を読んだ結果）:
  *   - ペリフェラル役の接続では、接続の CONFIG_BT_CONN_PARAM_UPDATE_TIMEOUT（ms、既定 5000）後に 1 回だけ
  *     PPCP（CONFIG_BT_PERIPHERAL_PREF_*）での更新を自動で要求する（conn.c:1242 で予約、deferred_work で送る）。
  *     受け入れられたらそれで終わりで、その後ホストが間隔を変えても要求し直さない。
- *     断られたときは、理由が「Unsupported LL Parameter Value (0x20)」の場合に限り 5 s おきに最大 3 回やり直す。
- *     このやり直しは Zephyr 自身の自動要求（AUTO_UPDATE フラグが立っているとき）だけが対象で、
- *     このモジュールの要求が 0x20 で断られても Zephyr はやり直さない（hci_core.c:1963-1969）。
- *     そちらはこのモジュールの RETRY_DELAY_MS 後の再要求が受け持つ
+ *     断られたときは、理由が「Unsupported LL Parameter Value (0x20)」の場合に限り、
+ *     CONFIG_BT_CONN_PARAM_RETRY_TIMEOUT（既定 5000 ms）おきに CONFIG_BT_CONN_PARAM_RETRY_COUNT（既定 3）回まで
+ *     PPCP を送り直す（hci_core.c:1963-1969、conn.c:2270-2288）
+ *   - Zephyr がやり直すかどうかは、どの要求が断られたかではなく、接続の AUTO_UPDATE フラグと残り回数で決まる。
+ *     フラグは PPCP を送ったときに立ち、受け入れ、0x20 以外の拒否、残り回数 0 での 0x20 の拒否で消える
+ *     （conn.c:2280-2283、hci_core.c:1961-1972）。このファイルの要求（bt_conn_le_param_update →
+ *     send_conn_le_param_update、conn.c:3540-3552, 2082-2117）はフラグに触らない。
+ *     そのため、Zephyr の自動要求が 0x20 で断られてやり直しが残っている間は、このファイルの要求が 0x20 で
+ *     断られると Zephyr のやり直しの 1 回として数えられ、Zephyr のやり直しの予約が無ければ新しく予約される。
+ *     Zephyr のやり直しとこのファイルの要求は交互に出て、Zephyr のやり直しはその分早く尽きる。
+ *     要求の合計は、Zephyr の最大 1 + CONFIG_BT_CONN_PARAM_RETRY_COUNT 回（既定 4 回）とこのファイルの
+ *     MAX_REQUESTS 回を超えない。2 つが重なるとコントローラが後から送った方を断る。このファイルなら -EACCES
+ *     などが返り、送れなかった要求として数える。Zephyr なら「Send auto LE param update failed」の WRN が出て、
+ *     Zephyr はその回のやり直しを予約しない（conn.c:2284-2287）
+ *   - Zephyr のやり直しが全部終わるまで（既定で接続から 5 + 3 × 5 + 1 = 21 s）待てば重ならないが、
+ *     Windows で 15 ms が残ったときに直るのがその分遅れる。重なっても回数は上の上限で止まるので、
+ *     待つのは 1 回目の自動要求まで（AUTO_REQUEST_WAIT_MS）にしている
+ *   - Zephyr の自動要求が通った後や 0x20 以外で断られた後、やり直しを使い切った後は、このファイルの要求が
+ *     断られても Zephyr はやり直さない。そちらはこのファイルの RETRY_DELAY_MS 後の再要求が受け持つ
  *   - LL の更新の結果（hci_core.c le_conn_update_complete）は、L2CAP へ切り替える最初の 1 回
  *     （0x1A Unsupported Remote Feature。ホストが LL の手順に対応しない）だけは何も通知せずに L2CAP で
  *     要求し直し、それ以外はどの分岐でも最後に notify_le_param_updated を呼ぶ（hci_core.c:1924-1977）。
@@ -22,7 +37,7 @@
  *     タイマーに送らせる（conn.c:3540-3552）。保存した値で送られると AUTO_UPDATE フラグが立たず、
  *     Zephyr 自身の 0x20 のやり直しが無くなる（conn.c:2254-2266）。そのため自動要求より前には呼ばない
  *
- * このモジュールのやること:
+ * このファイルのやること:
  *   - le_param_updated で間隔が希望の範囲外なら、RETRY_DELAY_MS 後に確かめて、外れたままなら要求する
  *   - 接続の INITIAL_CHECK_MS 後にも 1 回確かめる（自動要求が L2CAP で黙って断られたときの保険）
  *   - 接続から AUTO_REQUEST_WAIT_MS たつまでは要求しない（Zephyr の自動要求を先に出させる）。

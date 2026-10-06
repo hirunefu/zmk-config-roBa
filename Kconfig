@@ -6,13 +6,14 @@
 config ROBA_BLE_CONN_PARAM_RETRY
     bool "Re-request the BLE connection interval when the host moves it out of the preferred range"
     depends on ZMK_BLE && BT_PERIPHERAL && BT_GAP_PERIPHERAL_PREF_PARAMS
-    # 左手（ペリフェラル）には入れない。左手から見た右手との接続もペリフェラル役なので、
-    # 右手が接続時に決めた間隔（ZMK_SPLIT_BLE_PREF_INT）と押し問答になる
+    # 左手（ペリフェラル）には入れない。左手はホストに接続せず、右手との間隔は右手が決める
+    # （ZMK は左手で BT_GAP_AUTO_UPDATE_CONN_PARAMS を切り、セントラル役に任せている。
+    # cormoran/zmk の app/src/split/bluetooth/Kconfig:99-101）
     depends on !ZMK_SPLIT_BLE || ZMK_SPLIT_ROLE_CENTRAL
     help
-      ホストから見てペリフェラルの接続で、接続間隔が CONFIG_BT_PERIPHERAL_PREF_MIN_INT〜
+      ホストに対してペリフェラル役の接続で、接続間隔が CONFIG_BT_PERIPHERAL_PREF_MIN_INT〜
       CONFIG_BT_PERIPHERAL_PREF_MAX_INT の外になったら、接続パラメータの更新を自分から要求し直す。
-      Zephyr のホスト自身は接続後の自動要求が通った後は要求し直さないので、その後にずれた間隔や、
+      Zephyr の BLE スタック自身は接続後の自動要求が通った後は要求し直さないので、その後にずれた間隔や、
       自動要求が断られて残った間隔を戻すためのもの。
       Zephyr の自動要求が出るまでは何もせず、要求の回数には上限があり、超えたら警告ログを出して
       諦める（ホストの決めた間隔のままつながる）。待ち時間と回数はソースの #define で決めている。
