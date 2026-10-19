@@ -9,6 +9,8 @@ manifest:
       url-base: https://github.com/cormoran
     - name: amgskobo
       url-base: https://github.com/amgskobo
+    - name: caksoylar
+      url-base: https://github.com/caksoylar
   projects:
     # zmk は必ず zephyr より前に置く。app/west.yml の lvgl / hal_stm32 / zmk-studio-messages を
     # Zephyr 側の定義より優先させるため（west は先に定義されたプロジェクトを採用する）。
@@ -131,6 +133,13 @@ manifest:
     - name: zmk-input-vector-acceleration
       remote: amgskobo
       revision: 3f1bb330e576b31e4cac89524865ee5c00908cbc
+
+    # LED インジケーター（XIAO 本体の RGB LED で、電池・接続・レイヤーを色で示す。moNa2 と同じモジュール）。
+    # main の先端（2026-07-09）。ZMK main 向けの版で、使う API（zmk_endpoint_get_selected など）は固定した ZMK にある。
+    # 有効にするのは build.yaml の rgbled_adapter シールド、色などの設定は config/roBa_R.conf・roBa_L.conf
+    - name: zmk-rgbled-widget
+      remote: caksoylar
+      revision: e6b467792a1dabef8cfa5c9fd26bfefc9c16662b
 
   # nanopb（Studio RPC に必須）は optional グループにある。取り込み順に関係なく有効にするため消さない
   group-filter: [+optional]
