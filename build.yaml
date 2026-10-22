@@ -18,16 +18,14 @@
 #
 # ボードは Zephyr 4.1 の ZMK 用バリアント xiao_ble//zmk（旧 seeeduino_xiao_ble）。
 # artifact-name で出力ファイル名を roBa_R.uf2 / roBa_L.uf2 / settings_reset.uf2 に固定する。
-# rgbled_adapter は zmk-rgbled-widget のシールドで、XIAO 本体の RGB LED に別名（led-red など）を付け、
-# LED インジケーター（CONFIG_RGBLED_WIDGET）を有効にする。左右とも付ける（左手も電池と接続を光らせる）。
 ---
 include:
  - board: xiao_ble//zmk
-   shield: roBa_R rgbled_adapter
+   shield: roBa_R
    snippet: studio-rpc-usb-uart
    artifact-name: roBa_R
  - board: xiao_ble//zmk
-   shield: roBa_L rgbled_adapter
+   shield: roBa_L
    artifact-name: roBa_L
  - board: xiao_ble//zmk
    shield: settings_reset
