@@ -1,7 +1,10 @@
 # このリポジトリだけの設定項目。zephyr/module.yml の build.kconfig で読み込まれ、
 # Kconfig のメニューでは「roBa (<パス>)」の下に並ぶ。
 # ZMK や Zephyr の項目と名前が重ならないよう ROBA_ で始める（シールドの SHIELD_ROBA_R / SHIELD_ROBA_L とは別物）。
-# 有効にするかどうかは好みの設定（config/roBa_R.conf）で決める。
+# 有効にするかどうかは好みの設定（config/roBa_R.conf・config/roBa_L.conf）で決める。
+# 例外: 取り込んだ LED インジケーター（src/rgbled_widget/）の項目は、上流と比べやすいよう上流の名前（RGBLED_WIDGET_）のまま。
+
+rsource "src/rgbled_widget/Kconfig"
 
 config ROBA_BLE_CONN_PARAM_RETRY
     bool "Re-request the BLE connection interval when the host moves it out of the preferred range"
@@ -18,12 +21,3 @@ config ROBA_BLE_CONN_PARAM_RETRY
       Zephyr の自動要求が出るまでは何もせず、要求の回数には上限があり、超えたら警告ログを出して
       諦める（ホストの決めた間隔のままつながる）。待ち時間と回数はソースの #define で決めている。
       左手との接続（右手がセントラル役）には何もしない。実装は src/ble_conn_param_retry.c。
-
-config ROBA_LED_OFF_ON_SLEEP
-    bool "Disconnect the RGB LED pins right before deep sleep"
-    depends on RGBLED_WIDGET && ZMK_SLEEP
-    help
-      ディープスリープに入る直前（ZMK_ACTIVITY_SLEEP の通知）に、led-red・led-green・led-blue の別名が指す
-      GPIO を切り離して、LED を消す。nRF52840 は電源を切っても出力ピンの状態を保つので、LED が点いている瞬間に
-      眠ると、起きるまで点いたままになるのを防ぐ。起きると再起動し、LED のドライバが設定し直す。
-      左右どちらでも使える。実装は src/led_off_on_sleep.c。
